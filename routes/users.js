@@ -93,6 +93,20 @@ router.post('/modify', auth, (req, res) => {
 	}
 })
 
+// 退出登录
+router.get('/logout', auth, (req, res) => {
+	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)
+
+	tokenArr.delete(account)
+	tokenArr.delete(account + '@' + req.headers.authorization)
+
+	res.json({
+		code: 200,
+		msg: '已成功退出登录',
+		data: null
+	})
+})
+
 router.get('/validToken', auth, (req, res) => {
 	res.json({
 		code: 200,
