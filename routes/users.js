@@ -97,7 +97,6 @@ router.post('/modify', auth, (req, res) => {
 router.get('/logout', auth, (req, res) => {
 	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)
 
-	tokenArr.delete(account)
 	tokenArr.delete(account + '@' + req.headers.authorization)
 
 	res.json({
