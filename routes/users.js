@@ -13,19 +13,19 @@ router.post('/login', function (req, res) {
 		})
 	}
 
-	const { username, password } = req.body
+	const userAccount = Object.values(req.body).join('&')
 
-	if (username !== '123123' || password !== '123123') {
+	if (tokenArr.has(userAccount)) {
 		res.json({
 			code: 1,
 			msg: '账号或密码错误',
 			data: null
 		})
 	} else {
-		const userAccount = Object.values(req.body).join('&')
 
 		const token = jwt.sign(userAccount, TOKEN_SECRET)
 
+		tokenArr.add(userAccount)
 		tokenArr.add(userAccount + '@' + token)
 
 		res.json({
@@ -39,6 +39,7 @@ router.post('/login', function (req, res) {
 	}
 })
 
+// 基本信息
 router.get('/info', auth, (req, res) => {
 	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)
 
@@ -57,8 +58,39 @@ router.get('/info', auth, (req, res) => {
 	})
 })
 
+// 修改密码
 router.post('/modify', auth, (req, res) => {
+	const { oldPwd, newPwd } = req.body
 
+	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)
+
+	const [ username, password ] = account.split('&')
+
+	if (oldPwd !== password) {
+		res.json({
+			code: 1,
+			msg: '密码不正确',
+			data: null
+		})
+	} else {
+		const newUserAccount = `${username}&${newPwd}`,
+			oldUserAccount = `${username}&${oldPwd}`
+
+		const oldToken = jwt.sign(oldUserAccount, TOKEN_SECRET),
+			newToken = jwt.sign(newUserAccount, TOKEN_SECRET)
+
+		tokenArr.add(newUserAccount)
+		tokenArr.add(newUserAccount + '@' + newToken)
+
+		tokenArr.delete(oldUserAccount)
+		tokenArr.delete(oldUserAccount + '@' + oldToken)
+
+		res.json({
+			code: -1,
+			msg: '密码修改成功',
+			data: null
+		})
+	}
 })
 
 router.get('/validToken', auth, (req, res) => {
