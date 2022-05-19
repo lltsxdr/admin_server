@@ -52,7 +52,7 @@ router.get('/info', auth, (req, res) => {
 			username,
 			role: 1,
 			age: 25,
-			male: 'Female',
+			gender: 'Female',
 			job: 'FrontEnd Developer'
 		}
 	})
