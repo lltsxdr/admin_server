@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken')
 const TOKEN_SECRET = 'express'
 
-const tokenArr = new Set('123123&123123')
+const tokenArr = new Set()
+
+tokenArr.add('123123&123123')
 
 const auth = (req, res, next) => {
 	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)

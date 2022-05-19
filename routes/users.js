@@ -15,7 +15,7 @@ router.post('/login', function (req, res) {
 
 	const userAccount = Object.values(req.body).join('&')
 
-	if (tokenArr.has(userAccount)) {
+	if (!tokenArr.has(userAccount)) {
 		res.json({
 			code: 1,
 			msg: '账号或密码错误',
