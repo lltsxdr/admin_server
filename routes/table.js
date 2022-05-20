@@ -79,12 +79,12 @@ router.post('/userList', auth, (req, res) => {
 			? tableData
 			: tableData.filter(e => {
 				if (req.body.name && req.body.gender && req.body.job && req.body.age) {
-					return e.name === Number(req.body.name) &&
+					return e.name === req.body.name &&
 						e.age === Number(req.body.age) &&
 						e.gender === Number(req.body.gender) &&
 						e.job === Number(req.body.job)
 				} else {
-					return e.name === Number(req.body?.name) ||
+					return e.name === req.body?.name ||
 						e.age === Number(req.body?.age) ||
 						e.gender === Number(req.body?.gender) ||
 						e.job === Number(req.body?.job)
