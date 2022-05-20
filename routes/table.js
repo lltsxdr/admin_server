@@ -77,12 +77,19 @@ router.post('/userList', auth, (req, res) => {
 		msg: 'success',
 		data: !Object.keys(req.body).length
 			? tableData
-			: tableData.filter(e =>
-				e.name === Number(req.body?.name) ||
-				e.age === Number(req.body?.age) ||
-				e.gender === Number(req.body?.gender) ||
-				e.job === Number(req.body?.job)
-			)
+			: tableData.filter(e => {
+				if (req.body.name && req.body.gender && req.body.job && req.body.age) {
+					return e.name === Number(req.body.name) &&
+						e.age === Number(req.body.age) &&
+						e.gender === Number(req.body.gender) &&
+						e.job === Number(req.body.job)
+				} else {
+					return e.name === Number(req.body?.name) ||
+						e.age === Number(req.body?.age) ||
+						e.gender === Number(req.body?.gender) ||
+						e.job === Number(req.body?.job)
+				}
+			})
 	})
 })
 
