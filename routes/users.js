@@ -1,7 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
-const { auth, TOKEN_SECRET, tokenArr } = require('../public/javascripts/auth')
+const { auth, TOKEN_SECRET, User_database } = require('../public/javascripts/auth')
 
 /* GET users listing. */
 router.post('/login', function (req, res) {
@@ -15,25 +15,24 @@ router.post('/login', function (req, res) {
 
 	const userAccount = Object.values(req.body).join('&')
 
-	if (!tokenArr.has(userAccount)) {
+	if (!User_database[req.body.username] || User_database[req.body.username].password !== req.body.password) {
 		res.json({
 			code: 1,
 			msg: '账号或密码错误',
 			data: null
 		})
 	} else {
-
 		const token = jwt.sign(userAccount, TOKEN_SECRET)
 
-		tokenArr.add(userAccount)
-		tokenArr.add(userAccount + '@' + token)
+		User_database[req.body.username].token = token
 
 		res.json({
 			code: 200,
 			msg: 'success',
 			data: {
 				token,
-				role: 1
+				role: User_database[req.body.username].role,
+				id: User_database[req.body.username].id,
 			}
 		})
 	}
@@ -49,11 +48,8 @@ router.get('/info', auth, (req, res) => {
 		code: 200,
 		msg: 'success',
 		data: {
-			username,
-			role: 1,
-			age: 25,
-			gender: 'Female',
-			job: 'FrontEnd Developer'
+			...User_database[username],
+			password: undefined
 		}
 	})
 })
@@ -73,17 +69,10 @@ router.post('/modify', auth, (req, res) => {
 			data: null
 		})
 	} else {
-		const newUserAccount = `${username}&${newPwd}`,
-			oldUserAccount = `${username}&${oldPwd}`
+		const newUserAccount = `${username}&${newPwd}`
 
-		const oldToken = jwt.sign(oldUserAccount, TOKEN_SECRET),
-			newToken = jwt.sign(newUserAccount, TOKEN_SECRET)
-
-		tokenArr.add(newUserAccount)
-		tokenArr.add(newUserAccount + '@' + newToken)
-
-		tokenArr.delete(oldUserAccount)
-		tokenArr.delete(oldUserAccount + '@' + oldToken)
+		User_database[username].token = jwt.sign(newUserAccount, TOKEN_SECRET)
+		User_database[username].password = newPwd
 
 		res.json({
 			code: -1,
@@ -97,7 +86,9 @@ router.post('/modify', auth, (req, res) => {
 router.get('/logout', auth, (req, res) => {
 	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)
 
-	tokenArr.delete(account + '@' + req.headers.authorization)
+	const [ username ] = account.split('&')
+
+	User_database[username].token = ''
 
 	res.json({
 		code: 200,

@@ -1,14 +1,25 @@
 const jwt = require('jsonwebtoken')
 const TOKEN_SECRET = 'express'
 
-const tokenArr = new Set()
-
-tokenArr.add('123123&123123')
+const User_database = {
+	'admin': {
+		id: 1,
+		name: '姜老师',
+		password: '123123',
+		role: 1,
+		token: '',
+		gender: 1,
+		age: 25,
+		job: 8
+	}
+}
 
 const auth = (req, res, next) => {
 	const account = jwt.decode(req.headers.authorization, TOKEN_SECRET)
 
-	const isLogin = tokenArr.has(`${account}@${req.headers.authorization}` ?? '')
+	const [ username ] = account.split('&')
+
+	const isLogin = User_database[username].token === req.headers.authorization
 
 	if (!isLogin) {
 		res.json({
@@ -24,5 +35,5 @@ const auth = (req, res, next) => {
 module.exports = {
 	auth,
 	TOKEN_SECRET,
-	tokenArr
+	User_database
 }
