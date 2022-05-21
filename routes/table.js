@@ -161,10 +161,10 @@ router.post('/userList/edit', auth, (req, res) => {
 // 删除
 router.post('/userList/delete', auth, (req, res) => {
 	if (req.body.id) {
-		const exist = tableData.find(e => e.id === +req.body.id)
+		const exist = tableData.findIndex(e => e.id === Number(req.body.id))
 
-		if (exist) {
-			delete tableData[+req.body.id]
+		if (exist !== -1) {
+			tableData.splice(exist, 1)
 
 			res.json({
 				code: 200,
