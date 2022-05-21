@@ -160,7 +160,7 @@ router.post('/userList/edit', auth, (req, res) => {
 
 // 删除
 router.post('/userList/delete', auth, (req, res) => {
-	if (req.body.id) {
+	if (req.body.id !== undefined) {
 		const exist = tableData.findIndex(e => e.id === Number(req.body.id))
 
 		if (exist !== -1) {
