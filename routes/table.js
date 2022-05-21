@@ -121,13 +121,27 @@ router.post('/userList/edit', auth, (req, res) => {
 		const exist = tableData.find(e => e.id === +req.body.id)
 
 		if (exist) {
-			tableData[+req.body.id] = req.body
+			if (+req.body.age < 20 || +req.body.age > 35) {
+				res.json({
+					code: 1,
+					msg: '修改的年龄范围错误',
+					data: null
+				})
+			} else if (!req.body.name.length || req.body.name.length > 10) {
+				res.json({
+					code: 1,
+					msg: '修改的姓名长度不符合规范',
+					data: null
+				})
+			} else {
+				tableData[+req.body.id] = req.body
 
-			res.json({
-				code: 200,
-				msg: '新增成功',
-				data: null
-			})
+				res.json({
+					code: 200,
+					msg: '修改成功',
+					data: null
+				})
+			}
 		} else {
 			res.json({
 				code: 1,
